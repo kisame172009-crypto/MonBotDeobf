@@ -1,5 +1,16 @@
 const { Client, GatewayIntentBits, REST, Routes } = require('discord.js');
 
+const token = process.env.DISCORD_TOKEN;
+const clientId = process.env.CLIENT_ID;
+
+console.log("Token présent :", token ? "OUI" : "NON");
+console.log("Client ID :", clientId);
+
+if (!token || !clientId) {
+    console.error("❌ DISCORD_TOKEN ou CLIENT_ID manquant dans les variables !");
+    process.exit(1);
+}
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -35,14 +46,14 @@ const commands = [{
     }]
 }];
 
-const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
+const rest = new REST({ version: '10' }).setToken(token);
 
 (async () => {
     try {
-        await rest.put(Routes.applicationCommands(process.env.CLIENT_ID), { body: commands });
+        await rest.put(Routes.applicationCommands(clientId), { body: commands });
         console.log('✅ Commandes slash enregistrées');
     } catch (error) {
-        console.error('Erreur commandes:', error);
+        console.error('❌ Erreur commandes:', error.message);
     }
-    client.login(process.env.DISCORD_TOKEN);
+    client.login(token);
 })();
